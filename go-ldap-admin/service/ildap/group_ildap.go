@@ -30,10 +30,10 @@ func (x GroupService) Add(g *model.Group) error { //organizationalUnit
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	return conn.Add(add)
 }
@@ -45,10 +45,10 @@ func (x GroupService) Update(oldGroup, newGroup *model.Group) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	err = conn.Modify(modify1)
 	if err != nil {
@@ -71,10 +71,10 @@ func (x GroupService) Delete(gdn string) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	return conn.Del(del)
 }
@@ -90,10 +90,10 @@ func (x GroupService) AddUserToGroup(dn, udn string) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	return conn.Modify(newmr)
 }
@@ -105,10 +105,10 @@ func (x GroupService) RemoveUserFromGroup(gdn, udn string) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	return conn.Modify(newmr)
 }
@@ -126,10 +126,10 @@ func (x GroupService) ListGroupDN() (groups []*model.Group, err error) {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return groups, err
 	}
+	defer common.PutLADPConn(conn)
 	var sr *ldap.SearchResult
 	// Search through ldap built-in search
 	sr, err = conn.Search(searchRequest)

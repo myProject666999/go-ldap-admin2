@@ -1,0 +1,39 @@
+networks:
+  go-ldap-admin:
+    driver: bridge
+
+services:
+  go-ldap-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: go-ldap-admin
+    hostname: go-ldap-admin
+    restart: always
+    ports:
+      - 8888:8888
+    volumes:
+      - ./data/go-ldap-admin:/app/data
+    depends_on:
+      - openldap
+    networks:
+      - go-ldap-admin
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: go-ldap-admin-openldap
+    hostname: go-ldap-admin-openldap
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      LDAP_ORGANISATION: eryajf.net
+      LDAP_DOMAIN: eryajf.net
+      LDAP_ADMIN_PASSWORD: 123456
+      LDAP_BASE_DN: dc=eryajf,dc=net
+    volumes:
+      - ./data/openldap/database:/var/lib/ldap
+      - ./data/openldap/config:/etc/ldap/slapd.d
+    ports:
+      - 389:389
+    networks:
+      - go-ldap-admin

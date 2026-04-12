@@ -65,6 +65,9 @@ func GetLDAPConn() (*ldap.Conn, error) {
 
 // PutLDAPConn 放回 LDAP 连接
 func PutLADPConn(conn *ldap.Conn) {
+	if conn == nil {
+		return
+	}
 	ldapPool.PutConnection(conn)
 }
 
@@ -116,6 +119,11 @@ func (lcp *LdapConnPool) PutConnection(conn *ldap.Conn) {
 	log.Println("放回了一个 LDAP 连接")
 	lcp.mu.Lock()
 	defer lcp.mu.Unlock()
+
+	// 检查连接是否为nil
+	if conn == nil {
+		return
+	}
 
 	// 先判断是否存在等待的队列
 	if num := len(lcp.reqConns); num > 0 {
