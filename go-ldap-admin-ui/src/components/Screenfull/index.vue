@@ -6,6 +6,7 @@
 
 <script>
 import screenfull from 'screenfull'
+import { Message } from 'element-ui'
 
 export default {
   name: 'Screenfull',

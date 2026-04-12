@@ -5,19 +5,19 @@
         <router-view :key="key" />
       </keep-alive>
     </transition>
-    <el-footer  class="footer-copyright">
+    <el-footer class="footer-copyright">
       <div>
         <span>Since 2022 </span>
         <el-divider direction="vertical" />
         <span>Powered by </span>
-          <span>
-            <a href="https://github.com/eryajf/go-ldap-admin" target="_blank">Go-Ldap-Admin</a>
-          </span>
+        <span>
+          <a href="https://github.com/eryajf/go-ldap-admin" target="_blank">Go-Ldap-Admin</a>
+        </span>
         <el-divider direction="vertical" />
         <span>Copyright </span>
-          <span>
-            <a href="https://github.com/eryajf" target="_blank">Eryajf</a>
-          </span>
+        <span>
+          <a href="https://github.com/eryajf" target="_blank">Eryajf</a>
+        </span>
       </div>
     </el-footer>
   </section>

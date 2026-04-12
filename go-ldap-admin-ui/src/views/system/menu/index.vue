@@ -260,14 +260,14 @@ export default {
     },
 
     // 判断结果
-    judgeResult(res){
-      if (res.code==0){
-          Message({
-            showClose: true,
-            message: "操作成功",
-            type: 'success'
-          })
-        }
+    judgeResult(res) {
+      if (res.code === 0) {
+        Message({
+          showClose: true,
+          message: '操作成功',
+          type: 'success'
+        })
+      }
     },
 
     // 提交表单

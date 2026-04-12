@@ -51,8 +51,8 @@ export const constantRoutes = [
       {
         path: '/redirect/:path(.*)',
         component: () => import('@/views/redirect/index')
-      },
-      
+      }
+
     ]
   },
   {
@@ -61,11 +61,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
-      path: '/changePass',
-      name:'changePass',
-      hidden: true,
-      meta: { title: '忘记密码', icon: 'user', noCache: true },
-      component: () => import('@/views/changePassword/index'),
+    path: '/changePass',
+    name: 'changePass',
+    hidden: true,
+    meta: { title: '忘记密码', icon: 'user', noCache: true },
+    component: () => import('@/views/changePassword/index')
   },
   {
     path: '/404',
@@ -89,7 +89,7 @@ export const constantRoutes = [
         name: 'Dashboard',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
-      
+
     ]
   },
   {
@@ -103,8 +103,8 @@ export const constantRoutes = [
         component: () => import('@/views/profile/index'),
         name: 'Profile',
         meta: { title: '个人中心', icon: 'user', noCache: true }
-      },
-    
+      }
+
     ]
   },
   {
@@ -120,8 +120,8 @@ export const constantRoutes = [
         meta: { title: '分组成员', icon: 'user', noCache: true }
       }
     ]
-  
-  },
+
+  }
 
 ]
 

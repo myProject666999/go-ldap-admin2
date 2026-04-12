@@ -37,7 +37,7 @@ export function getRoleMenusById(params) {
 }
 
 // 更新角色的权限菜单(已完成)
-export function updateRoleMenusById( data) {
+export function updateRoleMenusById(data) {
   return request({
     url: '/api/role/updatemenus',
     method: 'post',

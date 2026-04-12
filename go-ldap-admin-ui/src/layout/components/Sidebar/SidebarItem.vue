@@ -58,7 +58,6 @@ export default {
   },
   methods: {
     hasOneShowingChild(children = [], parent) {
-      
       const showingChildren = children.filter(item => {
         if (item.hidden) {
           return false
@@ -83,13 +82,11 @@ export default {
       return false
     },
     resolvePath(routePath) {
-    
       if (isExternal(routePath)) {
-        // 
+        //
         return routePath
       }
       if (isExternal(this.basePath)) {
-  
         return this.basePath
       }
       return path.resolve(this.basePath, routePath)

@@ -49,7 +49,7 @@ const actions = {
 }
 
 export default {
-  namespaced: true, //这个是控制首页点击打开侧边栏
+  namespaced: true, // 这个是控制首页点击打开侧边栏
   state,
   mutations,
   actions

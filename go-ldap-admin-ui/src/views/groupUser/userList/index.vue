@@ -158,14 +158,14 @@ export default {
       this.multipleSelection = val
     },
     // 判断结果
-    judgeResult(res){
-      if (res.code==0){
-          Message({
-            showClose: true,
-            message: "操作成功",
-            type: 'success'
-          })
-        }
+    judgeResult(res) {
+      if (res.code === 0) {
+        Message({
+          showClose: true,
+          message: '操作成功',
+          type: 'success'
+        })
+      }
     },
     // 移除操作
     async batchDelete() {
@@ -175,7 +175,7 @@ export default {
       })
       this.loading = true
       try {
-        await delGroup({ groupId: Number(this.transParams.groupId), userIds: userRoles }).then(res =>{
+        await delGroup({ groupId: Number(this.transParams.groupId), userIds: userRoles }).then(res => {
           this.judgeResult(res)
         })
       } finally {

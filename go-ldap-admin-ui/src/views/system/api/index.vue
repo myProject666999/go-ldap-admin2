@@ -217,14 +217,14 @@ export default {
     },
 
     // 判断结果
-    judgeResult(res){
-      if (res.code==0){
-          Message({
-            showClose: true,
-            message: "操作成功",
-            type: 'success'
-          })
-        }
+    judgeResult(res) {
+      if (res.code === 0) {
+        Message({
+          showClose: true,
+          message: '操作成功',
+          type: 'success'
+        })
+      }
     },
 
     // 提交表单
@@ -234,11 +234,11 @@ export default {
           this.submitLoading = true
           try {
             if (this.dialogType === 'create') {
-              await createApi(this.dialogFormData).then(res =>{
+              await createApi(this.dialogFormData).then(res => {
                 this.judgeResult(res)
               })
             } else {
-              await updateApiById(this.dialogFormData).then(res =>{
+              await updateApiById(this.dialogFormData).then(res => {
                 this.judgeResult(res)
               })
             }
@@ -288,7 +288,7 @@ export default {
           apiIds.push(x.ID)
         })
         try {
-          await batchDeleteApiByIds({ apiIds: apiIds }).then(res =>{
+          await batchDeleteApiByIds({ apiIds: apiIds }).then(res => {
             this.judgeResult(res)
           })
         } finally {
@@ -313,7 +313,7 @@ export default {
     async singleDelete(Id) {
       this.loading = true
       try {
-        await batchDeleteApiByIds({ apiIds: [Id] }).then(res =>{
+        await batchDeleteApiByIds({ apiIds: [Id] }).then(res => {
           this.judgeResult(res)
         })
       } finally {

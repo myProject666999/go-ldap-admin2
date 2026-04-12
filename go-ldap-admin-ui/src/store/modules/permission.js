@@ -59,10 +59,9 @@ const actions = {
   generateRoutes({ commit }, userinfo) {
     return new Promise((resolve, reject) => {
       let accessedRoutes = []
-      const {id, roles}=userinfo
+      const { id } = userinfo
       // 获取菜单树
-      getUserMenuTreeByUserId({id: id}).then(res => {
-
+      getUserMenuTreeByUserId({ id: id }).then(res => {
         const { data } = res
         const menuTree = data
         accessedRoutes = getRoutesFromMenuTree(menuTree)

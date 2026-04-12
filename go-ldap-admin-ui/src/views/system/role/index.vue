@@ -251,14 +251,14 @@ export default {
     },
 
     // 判断结果
-    judgeResult(res){
-      if (res.code==0){
-          Message({
-            showClose: true,
-            message: "操作成功",
-            type: 'success'
-          })
-        }
+    judgeResult(res) {
+      if (res.code === 0) {
+        Message({
+          showClose: true,
+          message: '操作成功',
+          type: 'success'
+        })
+      }
     },
 
     // 提交表单
@@ -343,8 +343,7 @@ export default {
         await batchDeleteRoleByIds({ roleIds: [id] }).then(res => {
           this.judgeResult(res)
         })
-      }
-      finally {
+      } finally {
         this.loading = false
       }
     },
@@ -429,7 +428,7 @@ export default {
       ids = ids.concat(idsHalf)
       ids = [...new Set(ids)]
       try {
-        await updateRoleMenusById({ roleId: this.roleId, menuIds: ids }).then(res =>{
+        await updateRoleMenusById({ roleId: this.roleId, menuIds: ids }).then(res => {
           this.judgeResult(res)
         })
       } finally {
@@ -444,7 +443,7 @@ export default {
       this.permissionLoading = true
       const ids = this.$refs.roleApiTree.getCheckedKeys(true)
       try {
-        await updateRoleApisById({ roleId: this.roleId, apiIds: ids }).then(res =>{
+        await updateRoleApisById({ roleId: this.roleId, apiIds: ids }).then(res => {
           this.judgeResult(res)
         })
       } finally {
