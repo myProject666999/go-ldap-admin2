@@ -43,7 +43,7 @@ func main() {
 	common.InitDB()
 
 	// 初始化ldap连接
-	// common.InitLDAP()
+	common.InitLDAP()
 
 	// 初始化casbin策略管理器
 	common.InitCasbinEnforcer()
