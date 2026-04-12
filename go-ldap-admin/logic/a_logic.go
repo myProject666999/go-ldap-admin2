@@ -3,6 +3,7 @@ package logic
 import (
 	"fmt"
 	"math/rand"
+	"runtime/debug"
 
 	"github.com/eryajf/go-ldap-admin/config"
 	"github.com/eryajf/go-ldap-admin/model"
@@ -336,63 +337,75 @@ func ConvertUserData(flag string, remoteData []map[string]any) (users []*model.U
 	return
 }
 
+func SafeCronJob(fn func()) func() {
+	return func() {
+		defer func() {
+			if err := recover(); err != nil {
+				common.Log.Errorf("cron job panic recovered: %v\nstack trace:\n%s", err, debug.Stack())
+				fmt.Printf("cron job panic recovered: %v\nstack trace:\n%s\n", err, debug.Stack())
+			}
+		}()
+		fn()
+	}
+}
+
 func InitCron() {
 	c := cron.New(cron.WithSeconds())
 
 	if config.Conf.DingTalk.EnableSync {
 		//启动定时任务
-		_, err := c.AddFunc(config.Conf.DingTalk.DeptSyncTime, func() {
+		_, err := c.AddFunc(config.Conf.DingTalk.DeptSyncTime, SafeCronJob(func() {
 			DingTalk.SyncDingTalkDepts(nil, nil)
-		})
+		}))
 		if err != nil {
 			common.Log.Errorf("启动同步部门的定时任务失败: %v", err)
 		}
 		//每天凌晨1点执行一次
-		_, err = c.AddFunc(config.Conf.DingTalk.UserSyncTime, func() {
+		_, err = c.AddFunc(config.Conf.DingTalk.UserSyncTime, SafeCronJob(func() {
 			DingTalk.SyncDingTalkUsers(nil, nil)
-		})
+		}))
 		if err != nil {
 			common.Log.Errorf("启动同步用户的定时任务失败: %v", err)
 		}
 	}
 	if config.Conf.WeCom.EnableSync {
-		_, err := c.AddFunc(config.Conf.WeCom.DeptSyncTime, func() {
+		_, err := c.AddFunc(config.Conf.WeCom.DeptSyncTime, SafeCronJob(func() {
 			WeCom.SyncWeComDepts(nil, nil)
-		})
+		}))
 		if err != nil {
 			common.Log.Errorf("启动同步部门的定时任务失败: %v", err)
 		}
 		//每天凌晨1点执行一次
-		_, err = c.AddFunc(config.Conf.WeCom.UserSyncTime, func() {
+		_, err = c.AddFunc(config.Conf.WeCom.UserSyncTime, SafeCronJob(func() {
 			WeCom.SyncWeComUsers(nil, nil)
-		})
+		}))
 		if err != nil {
 			common.Log.Errorf("启动同步用户的定时任务失败: %v", err)
 		}
 	}
 	if config.Conf.FeiShu.EnableSync {
-		_, err := c.AddFunc(config.Conf.FeiShu.DeptSyncTime, func() {
+		_, err := c.AddFunc(config.Conf.FeiShu.DeptSyncTime, SafeCronJob(func() {
 			FeiShu.SyncFeiShuDepts(nil, nil)
-		})
+		}))
 		if err != nil {
 			common.Log.Errorf("启动同步部门的定时任务失败: %v", err)
 		}
 		//每天凌晨1点执行一次
-		_, err = c.AddFunc(config.Conf.FeiShu.UserSyncTime, func() {
+		_, err = c.AddFunc(config.Conf.FeiShu.UserSyncTime, SafeCronJob(func() {
 			FeiShu.SyncFeiShuUsers(nil, nil)
-		})
+		}))
 		if err != nil {
 			common.Log.Errorf("启动同步用户的定时任务失败: %v", err)
 		}
 	}
 
 	// 自动检索未同步数据
-	_, err := c.AddFunc("0 */2 * * * *", func() {
+	_, err := c.AddFunc("0 */2 * * * *", SafeCronJob(func() {
 		// 开发调试时调整为10秒执行一次
-		// _, err := c.AddFunc("*/10 * * * * *", func() {
+		// _, err := c.AddFunc("*/10 * * * * *", SafeCronJob(func() {
 		_ = SearchGroupDiff()
 		_ = SearchUserDiff()
-	})
+	}))
 	if err != nil {
 		common.Log.Errorf("启动同步任务状态检查任务失败: %v", err)
 	}

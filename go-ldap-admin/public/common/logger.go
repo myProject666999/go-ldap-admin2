@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/eryajf/go-ldap-admin/config"
@@ -13,7 +14,7 @@ import (
 )
 
 // 全局日志变量
-//var Log *zap.Logger
+// var Log *zap.Logger
 var Log *zap.SugaredLogger
 
 /**
@@ -108,4 +109,17 @@ func InitLogger() {
 	logger := zap.New(zapcore.NewTee(coreArr...), zap.AddCaller())
 	Log = logger.Sugar()
 	Log.Info("初始化zap日志完成!")
+}
+
+// SafeGo 安全地执行goroutine，捕获panic防止程序崩溃
+func SafeGo(fn func()) {
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				Log.Errorf("goroutine panic recovered: %v\nstack trace:\n%s", err, debug.Stack())
+				fmt.Printf("goroutine panic recovered: %v\nstack trace:\n%s\n", err, debug.Stack())
+			}
+		}()
+		fn()
+	}()
 }
