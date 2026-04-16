@@ -81,7 +81,7 @@ email:
 # # ldap 配置
 ldap:
   # ldap服务器地址
-  url: ldap://localhost:389
+  url: ldap://openldap:1389
   # ladp最大连接数设置
   max-conn: 10
   # ldap服务器基础DN
@@ -98,46 +98,39 @@ ldap:
   group-name-modify: false
   # 是否允许更改用户DN
   user-name-modify: false
-  # 用户密码加密方式 默认为 ssha 还可指定为 clear(表示不加密)
-  user-password-encryption-type: "ssha"
-  # 默认邮箱后缀
-  default-email-suffix: "eryajf.net"
-  # 是否开启同步功能，表示将该ldap中的数据同步到数据库，如果你是新建的，则保持false，页面上也不会展示同步按钮
-  enable-sync: false
-# 📢 即便用不到如下三段配置信息，也不要删除，否则会有一些奇怪的错误出现
+
+# 钉钉配置
 dingtalk:
-  # 配置获取详细文档参考： http://ldapdoc.eryajf.net/pages/94f43a/
-  flag: "dingtalk" # 作为钉钉在平台的标识
-  app-key: "xxxxxxxxxxxxxxx" # 应用的key
-  app-secret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxx" # 应用的secret
-  agent-id: "12121212" # 目前agent-id未使用到，可忽略
-  enable-sync: false  # 是否开启定时同步钉钉的任务
-  dept-sync-time: "0 30 2 * * *" # 部门同步任务的时间点 * * * * * * 秒 分 时 日 月 周, 请把时间设置在凌晨 1 ~ 5 点
-  user-sync-time: "0 30 3 * * *" # 用户同步任务的时间点 * * * * * * 秒 分 时 日 月 周, 请把时间设置在凌晨 1 ~ 5 点,注意请把用户同步的任务滞后于部门同步时间,比如部门为2点,则用户为3点
-  dept-list:    # 配置要同步的部门列表，配置留空则同步所有部门，在开头加^表示不同步此部门
-    #- "48456726"   # 需要同步的部门ID
-    #- "^61213417"  # 不需要同步的部门ID
-  is-update-syncd: false # 当钉钉用户的邮箱，手机号，部门等信息更新之后，是否同步更新，默认为false，如果你不了解这个字段的含义，则不建议开启
-  user-leave-range: 0 #按配置天数查离职时间范围内的用户,为0时不限制
+  flag: "dingtalk"
+  app-key: ""
+  app-secret: ""
+  agent-id: ""
+  root-ou-name: ""
+  enable-sync: false
+  dept-sync-time: "0 30 2 * * *"
+  user-sync-time: "0 30 3 * * *"
+  dept-list: []
+  is-update-syncd: false
+  user-leave-range: 0
+
+# 企业微信配置
 wecom:
-  # 配置获取详细文档参考：http://ldapdoc.eryajf.net/pages/cf1698/
-  flag: "wecom" # 作为微信在平台的标识
-  corp-id: "xxxx" # 企业微信企业ID
-  agent-id: 1000003 # 企业微信中创建的应用ID
-  corp-secret: "xxxxx" # 企业微信中创建的应用secret
-  enable-sync: false # 是否开启定时同步企业微信的任务
-  dept-sync-time: "0 30 2 * * *" # 部门同步任务的时间点 * * * * * * 秒 分 时 日 月 周, 请把时间设置在凌晨 1 ~ 5 点
-  user-sync-time: "0 30 3 * * *" # 用户同步任务的时间点 * * * * * * 秒 分 时 日 月 周, 请把时间设置在凌晨 1 ~ 5 点,注意请把用户同步的任务滞后于部门同步时间,比如部门为2点,则用户为3点
-  is-update-syncd: false # 当企微用户的邮箱，手机号，部门等信息更新之后，是否同步更新，默认为false，如果你不了解这个字段的含义，则不建议开启
+  flag: "wecom"
+  corp-id: ""
+  agent-id: 0
+  corp-secret: ""
+  enable-sync: false
+  dept-sync-time: "0 30 2 * * *"
+  user-sync-time: "0 30 3 * * *"
+  is-update-syncd: false
+
+# 飞书配置
 feishu:
-  # 配置获取详细文档参考：http://ldapdoc.eryajf.net/pages/83c90b/
-  flag: "feishu" # 作为飞书在平台的标识
-  app-id: "xxxxxxx" # 飞书的app-id
-  app-secret: "xxxxxxxxxxx" # 飞书的app-secret
-  enable-sync: false  # 是否开启定时同步飞书的任务
-  dept-sync-time: "0 20 0 * * *" # 部门同步任务的时间点 * * * * * * 秒 分 时 日 月 周, 请把时间设置在凌晨 1 ~ 5 点
-  user-sync-time: "0 40 0 * * *" # 用户同步任务的时间点 * * * * * * 秒 分 时 日 月 周, 请把时间设置在凌晨 1 ~ 5 点,注意请把用户同步的任务滞后于部门同步时间,比如部门为2点,则用户为3点
-  dept-list:    # 配置要同步的部门列表，配置留空则同步所有部门，在开头加^表示不同步此部门
-    #- "48456726"   # 需要同步的部门ID
-    #- "^61213417"  # 不需要同步的部门ID
-  is-update-syncd: false # 当飞书用户的邮箱，手机号，部门等信息更新之后，是否同步更新，默认为false，如果你不了解这个字段的含义，则不建议开启
+  flag: "feishu"
+  app-id: ""
+  app-secret: ""
+  enable-sync: false
+  dept-sync-time: "0 30 2 * * *"
+  user-sync-time: "0 30 3 * * *"
+  dept-list: []
+  is-update-syncd: false

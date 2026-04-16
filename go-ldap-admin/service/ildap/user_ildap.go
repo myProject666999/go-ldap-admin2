@@ -39,10 +39,10 @@ func (x UserService) Add(user *model.User) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	return conn.Add(add)
 }
@@ -64,10 +64,10 @@ func (x UserService) Update(oldusername string, user *model.User) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	err = conn.Modify(modify)
 	if err != nil {
@@ -97,10 +97,10 @@ func (x UserService) Exist(filter map[string]any) (bool, error) {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return false, err
 	}
+	defer common.PutLADPConn(conn)
 	var sr *ldap.SearchResult
 	// Search through ldap built-in search
 	sr, err = conn.Search(searchRequest)
@@ -118,10 +118,10 @@ func (x UserService) Delete(udn string) error {
 	del := ldap.NewDelRequest(udn, nil)
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 	return conn.Del(del)
 }
 
@@ -134,10 +134,10 @@ func (x UserService) ChangePwd(udn, oldpasswd, newpasswd string) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	_, err = conn.PasswordModify(modifyPass)
 	if err != nil {
@@ -163,10 +163,10 @@ func (x UserService) NewPwd(username string) (string, error) {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return "", err
 	}
+	defer common.PutLADPConn(conn)
 
 	newpass, err := conn.PasswordModify(modifyPass)
 	if err != nil {
@@ -181,10 +181,10 @@ func updatePasswordClear(udn, newpasswd string) error {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return err
 	}
+	defer common.PutLADPConn(conn)
 
 	if err := conn.Modify(modify); err != nil {
 		return fmt.Errorf("password modify failed for %s, err: %v", udn, err)
@@ -203,10 +203,10 @@ func (x UserService) ListUserDN() (users []*model.User, err error) {
 
 	// 获取 LDAP 连接
 	conn, err := common.GetLDAPConn()
-	defer common.PutLADPConn(conn)
 	if err != nil {
 		return users, err
 	}
+	defer common.PutLADPConn(conn)
 	var sr *ldap.SearchResult
 	// Search through ldap built-in search
 	sr, err = conn.Search(searchRequest)
