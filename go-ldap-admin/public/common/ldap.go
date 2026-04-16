@@ -15,31 +15,29 @@ import (
 
 var ldapPool *LdapConnPool
 var ldapInit = false
-var ldapInitOne sync.Once
+var ldapInitMu sync.Mutex
 
 // Init 初始化连接
 func InitLDAP() {
+	ldapInitMu.Lock()
+	defer ldapInitMu.Unlock()
+
 	if ldapInit {
 		return
 	}
 
-	ldapInitOne.Do(func() {
-		ldapInit = true
-	})
-
-	// Dail有两个参数 network,  address, 返回 (*Conn,  error)
 	ldapConn, err := ldap.DialURL(config.Conf.Ldap.Url, ldap.DialWithDialer(&net.Dialer{Timeout: 5 * time.Second}))
 	if err != nil {
-		Log.Panicf("初始化ldap连接异常: %v", err)
-		panic(fmt.Errorf("初始化ldap连接异常: %v", err))
+		Log.Errorf("初始化ldap连接异常: %v", err)
+		return
 	}
 	err = ldapConn.Bind(config.Conf.Ldap.AdminDN, config.Conf.Ldap.AdminPass)
 	if err != nil {
-		Log.Panicf("绑定admin账号异常: %v", err)
-		panic(fmt.Errorf("绑定admin账号异常: %v", err))
+		Log.Errorf("绑定admin账号异常: %v", err)
+		ldapConn.Close()
+		return
 	}
 
-	// 全局变量赋值
 	ldapPool = &LdapConnPool{
 		conns:    make([]*ldap.Conn, 0),
 		reqConns: make(map[uint64]chan *ldap.Conn),
@@ -47,8 +45,8 @@ func InitLDAP() {
 		maxOpen:  config.Conf.Ldap.MaxConn,
 	}
 	PutLADPConn(ldapConn)
+	ldapInit = true
 
-	// 隐藏密码
 	showDsn := fmt.Sprintf(
 		"%s:******@tcp(%s)",
 		config.Conf.Ldap.AdminDN,
@@ -60,11 +58,23 @@ func InitLDAP() {
 
 // GetLDAPConn 获取 LDAP 连接
 func GetLDAPConn() (*ldap.Conn, error) {
+	if ldapPool == nil {
+		InitLDAP()
+	}
+	if ldapPool == nil {
+		return nil, fmt.Errorf("LDAP连接池未初始化，请检查LDAP配置是否正确")
+	}
 	return ldapPool.GetConnection()
 }
 
 // PutLDAPConn 放回 LDAP 连接
 func PutLADPConn(conn *ldap.Conn) {
+	if ldapPool == nil {
+		if conn != nil && !conn.IsClosing() {
+			conn.Close()
+		}
+		return
+	}
 	ldapPool.PutConnection(conn)
 }
 
