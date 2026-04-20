@@ -57,7 +57,9 @@ func main() {
 	// 操作日志中间件处理日志时没有将日志发送到rabbitmq或者kafka中, 而是发送到了channel中
 	// 这里开启3个goroutine处理channel将日志记录到数据库
 	for i := 0; i < 3; i++ {
-		go isql.OperationLog.SaveOperationLogChannel(middleware.OperationLogChan)
+		common.SafeGo(func() {
+			isql.OperationLog.SaveOperationLogChannel(middleware.OperationLogChan)
+		})
 	}
 
 	// 注册所有路由
@@ -73,11 +75,11 @@ func main() {
 
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below
-	go func() {
+	common.SafeGo(func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			common.Log.Fatalf("listen: %s\n", err)
 		}
-	}()
+	})
 
 	// 启动定时任务
 	logic.InitCron()

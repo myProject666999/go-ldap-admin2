@@ -3,6 +3,7 @@ package isql
 import (
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -19,28 +20,52 @@ type OperationLogService struct{}
 // var Logs []model.OperationLog //全局变量多个线程需要加锁，所以每个线程自己维护一个
 // 处理OperationLogChan将日志记录到数据库
 func (s OperationLogService) SaveOperationLogChannel(olc <-chan *model.OperationLog) {
-	// 只会在线程开启的时候执行一次
+	defer func() {
+		if err := recover(); err != nil {
+			common.Log.Errorf("SaveOperationLogChannel panic recovered: %v\nstack trace:\n%s", err, debug.Stack())
+			fmt.Printf("SaveOperationLogChannel panic recovered: %v\nstack trace:\n%s\n", err, debug.Stack())
+			common.SafeGo(func() {
+				s.SaveOperationLogChannel(olc)
+			})
+		}
+	}()
+
 	Logs := make([]model.OperationLog, 0)
-	// 5s 自动同步一次
 	duration := 5 * time.Second
 	timer := time.NewTimer(duration)
 	defer timer.Stop()
 	for {
 		select {
 		case log := <-olc:
+			if log == nil {
+				continue
+			}
 			Logs = append(Logs, *log)
-			// 每10条记录到数据库
 			if len(Logs) > 5 {
-				common.DB.Create(&Logs)
+				func() {
+					defer func() {
+						if err := recover(); err != nil {
+							common.Log.Errorf("DB create operation log panic: %v", err)
+						}
+					}()
+					common.DB.Create(&Logs)
+				}()
 				Logs = make([]model.OperationLog, 0)
-				timer.Reset(duration) // 入库重置定时器
+				timer.Reset(duration)
 			}
-		case <-timer.C: // 5s 自动同步一次
+		case <-timer.C:
 			if len(Logs) > 0 {
-				common.DB.Create(&Logs)
+				func() {
+					defer func() {
+						if err := recover(); err != nil {
+							common.Log.Errorf("DB create operation log timer panic: %v", err)
+						}
+					}()
+					common.DB.Create(&Logs)
+				}()
 				Logs = make([]model.OperationLog, 0)
 			}
-			timer.Reset(duration) // 入库重置定时器
+			timer.Reset(duration)
 		}
 	}
 }

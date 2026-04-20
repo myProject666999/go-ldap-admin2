@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"net"
 	"sync"
@@ -60,11 +59,21 @@ func InitLDAP() {
 
 // GetLDAPConn 获取 LDAP 连接
 func GetLDAPConn() (*ldap.Conn, error) {
+	ldapInitOne.Do(func() {
+		if ldapPool == nil || ldapPool.conns == nil {
+			InitLDAP()
+		}
+	})
 	return ldapPool.GetConnection()
 }
 
 // PutLDAPConn 放回 LDAP 连接
 func PutLADPConn(conn *ldap.Conn) {
+	ldapInitOne.Do(func() {
+		if ldapPool == nil || ldapPool.conns == nil {
+			InitLDAP()
+		}
+	})
 	ldapPool.PutConnection(conn)
 }
 
@@ -78,6 +87,9 @@ type LdapConnPool struct {
 
 // 获取一个 ladp Conn
 func (lcp *LdapConnPool) GetConnection() (*ldap.Conn, error) {
+	if lcp == nil || lcp.conns == nil {
+		InitLDAP()
+	}
 	lcp.mu.Lock()
 	// 判断当前连接池内是否存在连接
 	connNum := len(lcp.conns)
@@ -89,7 +101,7 @@ func (lcp *LdapConnPool) GetConnection() (*ldap.Conn, error) {
 
 		lcp.mu.Unlock()
 		// 发现连接已经 close 重新获取连接
-		if conn.IsClosing() {
+		if conn == nil || conn.IsClosing() {
 			return initLDAPConn()
 		}
 		return conn, nil
@@ -113,7 +125,12 @@ func (lcp *LdapConnPool) GetConnection() (*ldap.Conn, error) {
 }
 
 func (lcp *LdapConnPool) PutConnection(conn *ldap.Conn) {
-	log.Println("放回了一个 LDAP 连接")
+	if lcp == nil || lcp.conns == nil {
+		InitLDAP()
+	}
+	if conn == nil {
+		return
+	}
 	lcp.mu.Lock()
 	defer lcp.mu.Unlock()
 
